@@ -29,8 +29,8 @@ pub mod request {
     pub fn stream_file<'a>(
         site: String,
         inner_path: String,
-        location: usize,
         file_size: usize,
+        location: usize,
         read_bytes: usize,
     ) -> (&'a str, StreamFile) {
         (

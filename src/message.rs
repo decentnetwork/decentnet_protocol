@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 
-use crate::{error::Error, interface::Requestable, templates::*};
+use crate::{error::Error, interface::Requestable, templates::*, utils::Value};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(untagged)]
@@ -47,8 +49,9 @@ pub enum ResponseType {
 pub struct Response {
     pub cmd: String,
     pub to: usize,
+    /// https://github.com/3Hren/msgpack-rust/issues/153
     #[serde(flatten)]
-    response: ResponseType,
+    response: HashMap<String, Value>,
 }
 
 impl Response {
@@ -94,7 +97,7 @@ impl ZeroMessage {
         let response = Response {
             cmd: "response".to_string(),
             to,
-            response: body,
+            response: HashMap::new(),
         };
         ZeroMessage::Response(response)
     }
