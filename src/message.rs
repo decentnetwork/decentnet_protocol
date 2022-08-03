@@ -50,8 +50,10 @@ pub struct Response {
     pub cmd: String,
     pub to: usize,
     /// https://github.com/3Hren/msgpack-rust/issues/153
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing)]
     response: HashMap<String, Value>,
+    #[serde(flatten, skip_deserializing)]
+    body: Option<ResponseType>,
 }
 
 impl Response {
@@ -98,6 +100,7 @@ impl ZeroMessage {
             cmd: "response".to_string(),
             to,
             response: HashMap::new(),
+            body: Some(body),
         };
         ZeroMessage::Response(response)
     }
