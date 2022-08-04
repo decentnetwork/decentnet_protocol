@@ -4,6 +4,7 @@ use std::hash::Hash;
 use serde_bytes::ByteBuf;
 
 use crate::templates::*;
+use crate::utils::Either;
 
 #[async_trait::async_trait]
 pub trait RequestImpl {
@@ -20,13 +21,13 @@ pub trait RequestImpl {
         file_size: usize,
         location: usize,
         read_bytes: Option<usize>,
-    ) -> Result<GetFileResponse, Self::Error>;
+    ) -> Result<Either<GetFileResponse, ErrorResponse>, Self::Error>;
 
     async fn stream_file(
         &mut self,
         site: String,
         inner_path: String,
-    ) -> Result<StreamFileResponse, Self::Error>;
+    ) -> Result<Either<StreamFileResponse, ErrorResponse>, Self::Error>;
 
     async fn list_modified(
         &mut self,
