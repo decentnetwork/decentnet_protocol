@@ -9,3 +9,5 @@ pub mod interface;
 pub mod message;
 #[cfg(feature = "templates")]
 pub mod templates;
+
+pub use utils::Either;

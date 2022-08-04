@@ -25,3 +25,10 @@ impl Default for Value {
 pub(crate) fn is_default<T: Default + PartialEq>(t: &T) -> bool {
     t == &T::default()
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum Either<Left, Right> {
+    Success(Left),
+    Error(Right),
+}
