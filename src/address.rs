@@ -10,6 +10,8 @@ use thiserror::Error;
 use i2p::net::{I2pSocketAddr, ToI2pSocketAddrs};
 #[cfg(any(feature = "tor", feature = "i2p"))]
 use koibumi_base32 as base32;
+#[cfg(any(feature = "tor"))]
+use tor_stream::TorStream;
 
 pub trait ToPeerAddrs {
     /// Returned iterator over peer addresses which this type may correspond
@@ -374,13 +376,20 @@ impl PeerAddr {
             PeerAddr::Loki(address, port) => format!("{}.loki:{}", address, port),
         }
     }
+
     pub fn get_pair(&self) -> Result<(Box<dyn Read + Send>, Box<dyn Write + Send>), AddressError> {
         match self {
             PeerAddr::IPV4(_, _) | PeerAddr::IPV6(_, _) => {
                 let socket = TcpStream::connect(self.to_string())?;
                 return Ok((Box::new(socket.try_clone()?), Box::new(socket)));
             }
-            #[cfg(any(feature = "i2p", feature = "tor"))]
+            #[cfg(feature = "tor")]
+            PeerAddr::OnionV2(_, _) | PeerAddr::OnionV3(_, _) => {
+                let (reader, writer) =
+                    TorStream::connect(self.to_string().as_str())?.split_boxed()?;
+                return Ok((reader, writer));
+            }
+            #[cfg(any(feature = "i2p"))]
             _ => Err(AddressError::TcpStreamError),
         }
     }
