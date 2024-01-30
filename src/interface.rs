@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 use serde_bytes::ByteBuf;
+use serde_json::Value;
 
 use crate::templates::*;
 use crate::utils::Either;
@@ -16,8 +17,8 @@ pub trait RequestImpl {
 
     async fn get_file(
         &mut self,
-        site: String,
-        inner_path: String,
+        site: &str,
+        inner_path: &str,
         file_size: usize,
         location: usize,
         read_bytes: Option<usize>,
@@ -25,24 +26,24 @@ pub trait RequestImpl {
 
     async fn stream_file(
         &mut self,
-        site: String,
-        inner_path: String,
+        site: &str,
+        inner_path: &str,
     ) -> Result<Either<StreamFileResponse, ErrorResponse>, Self::Error>;
 
     async fn list_modified(
         &mut self,
-        site: String,
+        site: &str,
         since: usize,
     ) -> Result<ListModifiedResponse, Self::Error>;
 
-    async fn pex(&mut self, site: String) -> Result<PexResponse, Self::Error>;
+    async fn pex(&mut self, site: &str) -> Result<PexResponse, Self::Error>;
 
     async fn update(
         &mut self,
-        site: String,
-        inner_path: String,
+        site: &str,
+        inner_path: &str,
         body: ByteBuf,
-        diffs: HashMap<String, Vec<serde_json::Value>>,
+        diffs: HashMap<String, Vec<Value>>,
         modified: usize,
     ) -> Result<UpdateSiteResponse, Self::Error>;
 }

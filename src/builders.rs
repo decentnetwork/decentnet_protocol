@@ -8,8 +8,8 @@ pub mod request {
 
     ///Peer requests
     pub fn get_file<'a>(
-        site: String,
-        inner_path: String,
+        site: &'a str,
+        inner_path: &'a str,
         file_size: usize,
         location: usize,
         read_bytes: Option<usize>,
@@ -17,8 +17,8 @@ pub mod request {
         (
             "getFile",
             GetFile {
-                site,
-                inner_path,
+                site: site.into(),
+                inner_path: inner_path.into(),
                 file_size,
                 location,
                 read_bytes,
@@ -27,8 +27,8 @@ pub mod request {
     }
 
     pub fn stream_file<'a>(
-        site: String,
-        inner_path: String,
+        site: &'a str,
+        inner_path: &'a str,
         file_size: usize,
         location: usize,
         read_bytes: usize,
@@ -36,8 +36,8 @@ pub mod request {
         (
             "streamFile",
             StreamFile {
-                site,
-                inner_path,
+                site: site.into(),
+                inner_path: inner_path.into(),
                 location,
                 file_size,
                 read_bytes,
@@ -45,11 +45,11 @@ pub mod request {
         )
     }
 
-    pub fn pex<'a>(site: String, need: usize) -> (&'a str, Pex) {
+    pub fn pex<'a>(site: &'a str, need: usize) -> (&'a str, Pex) {
         (
             "pex",
             Pex {
-                site,
+                site: site.into(),
                 peers: vec![],
                 peers_onion: Some(vec![]),
                 peers_ipv6: Some(vec![]),
@@ -59,8 +59,8 @@ pub mod request {
     }
 
     pub fn update_site<'a>(
-        site: String,
-        inner_path: String,
+        site: &'a str,
+        inner_path: &'a str,
         body: ByteBuf,
         diffs: HashMap<String, Vec<Value>>,
         modified: usize,
@@ -68,8 +68,8 @@ pub mod request {
         (
             "update",
             Update {
-                site,
-                inner_path,
+                site: site.into(),
+                inner_path: inner_path.into(),
                 body,
                 diffs,
                 modified,
@@ -77,26 +77,26 @@ pub mod request {
         )
     }
 
-    pub fn list_modified<'a>(site: String, since: usize) -> (&'a str, ListModified) {
-        ("listModified", ListModified { site, since })
+    pub fn list_modified<'a>(site: &'a str, since: usize) -> (&'a str, ListModified) {
+        ("listModified", ListModified { site: site.into(), since: since.into() })
     }
 
-    pub fn get_hashfield<'a>(site: String) -> (&'a str, GetHashfield) {
-        ("getHashfield", GetHashfield { site })
+    pub fn get_hashfield<'a>(site: &'a str) -> (&'a str, GetHashfield) {
+        ("getHashfield", GetHashfield { site: site.into() })
     }
 
-    pub fn set_hashfield<'a>(site: String, hashfield_raw: ByteBuf) -> (&'a str, SetHashfield) {
+    pub fn set_hashfield<'a>(site: &'a str, hashfield_raw: ByteBuf) -> (&'a str, SetHashfield) {
         (
             "setHashfield",
             SetHashfield {
-                site,
+                site: site.into(),
                 hashfield_raw,
             },
         )
     }
 
-    pub fn find_hash_ids<'a>(site: String, hash_ids: Vec<usize>) -> (&'a str, FindHashIds) {
-        ("findHashIds", FindHashIds { site, hash_ids })
+    pub fn find_hash_ids<'a>(site: &'a str, hash_ids: Vec<usize>) -> (&'a str, FindHashIds) {
+        ("findHashIds", FindHashIds { site: site.into(), hash_ids })
     }
 
     pub fn checkport<'a>(port: u16) -> (&'a str, Checkport) {
@@ -104,18 +104,18 @@ pub mod request {
     }
 
     ///Bigfile Plugin
-    pub fn get_piece_fields<'a>(site: String) -> (&'a str, GetPieceFields) {
-        ("getPieceFields", GetPieceFields { site })
+    pub fn get_piece_fields<'a>(site: &'a str) -> (&'a str, GetPieceFields) {
+        ("getPieceFields", GetPieceFields { site: site.into() })
     }
 
     pub fn set_piece_fields<'a>(
-        site: String,
+        site: &'a str,
         piecefields_packed: ByteBuf,
     ) -> (&'a str, SetPieceFields) {
         (
             "setPieceFields",
             SetPieceFields {
-                site,
+                site: site.into(),
                 piecefields_packed,
             },
         )
@@ -158,8 +158,8 @@ pub mod response {
         }
     }
 
-    pub fn update_site(ok: String) -> UpdateSiteResponse {
-        UpdateSiteResponse { ok }
+    pub fn update_site(ok: &str) -> UpdateSiteResponse {
+        UpdateSiteResponse { ok: ok.into()}
     }
 
     pub fn list_modified(modified_files: HashMap<String, usize>) -> ListModifiedResponse {
@@ -170,8 +170,8 @@ pub mod response {
         GetHashfieldResponse { hashfield_raw }
     }
 
-    pub fn set_hashfield(ok: String) -> SetHashfieldResponse {
-        SetHashfieldResponse { ok }
+    pub fn set_hashfield(ok: &str) -> SetHashfieldResponse {
+        SetHashfieldResponse { ok: ok.into() }
     }
 
     pub fn find_hash_ids(
@@ -188,10 +188,10 @@ pub mod response {
         }
     }
 
-    pub fn checkport(status: String, ip_external: String) -> CheckportResponse {
+    pub fn checkport(status: &str, ip_external: &str) -> CheckportResponse {
         CheckportResponse {
-            status,
-            ip_external,
+            status: status.into(),
+            ip_external: ip_external.into(),
         }
     }
 
