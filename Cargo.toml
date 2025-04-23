@@ -13,6 +13,7 @@ rmp-serde = "1.1"
 base64 = "0.21"
 koibumi-base32 = {version= "0.0.2", optional = true}
 tor-stream = {git = "https://github.com/decentnetwork/tor-stream.git", optional = true}
+tokio = { version = "1.0", default-features = false, features = ["net"] }
 
 [features]
 default = ["interface", "builders"]

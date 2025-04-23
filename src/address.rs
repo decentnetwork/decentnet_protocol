@@ -394,6 +394,27 @@ impl PeerAddr {
         }
     }
 
+    pub async fn get_pair_async(
+        &self,
+    ) -> Result<(Box<dyn Read + Send>, Box<dyn Write + Send>), AddressError> {
+        match self {
+            PeerAddr::IPV4(_, _) | PeerAddr::IPV6(_, _) => {
+                use tokio::net::TcpStream as AsyncTcpStream;
+                let socket = AsyncTcpStream::connect(self.to_string()).await?;
+                let socket = socket.into_std()?;
+                return Ok((Box::new(socket.try_clone()?), Box::new(socket)));
+            }
+            #[cfg(feature = "tor")]
+            PeerAddr::OnionV2(_, _) | PeerAddr::OnionV3(_, _) => {
+                let (reader, writer) =
+                    TorStream::connect(self.to_string().as_str())?.split_boxed()?;
+                return Ok((reader, writer));
+            }
+            #[cfg(any(feature = "i2p"))]
+            _ => Err(AddressError::TcpStreamError),
+        }
+    }
+
     /// Change the port of the address.
     /// ```
     /// use zeronet_protocol::PeerAddr;
